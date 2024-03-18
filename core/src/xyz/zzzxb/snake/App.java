@@ -47,12 +47,14 @@ public class App extends ApplicationAdapter {
     Music gom;
     Sound gold;
 
+    long beginTime, endTime;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
         wall = new Wall(Color.BLACK, 512, 512, 16, 16);
-        snake = new Snake(new Color(0x3aa97cff), 16, 16, 0.5f);
-        snake.setSpeed(0.1f, 0.2f, 0.9f);
+        snake = new Snake(new Color(0x3aa97cff), 16, 16, 0.05f);
+        snake.setSpeed(0.01f, 0.01f, 0.09f);
         food = new Food(new Color(0xfbf236ff), 16, 16);
         food.randomPosition(snake.getPositions());
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -82,9 +84,6 @@ public class App extends ApplicationAdapter {
         snake.draw(batch);
         food.draw(batch);
         wall.draw(batch);
-        eatFood();
-        checkGameOver();
-
         batch.end();
 
         gameCtrl();
@@ -103,6 +102,8 @@ public class App extends ApplicationAdapter {
             gameState = GameState.ACTIVE;
             score = 0;
             snake.init();
+            beginTime = 0;
+            endTime = 0;
 
             gold.pause();
             gom.pause();
@@ -119,14 +120,19 @@ public class App extends ApplicationAdapter {
                 gameState = GameState.ACTIVE;
             }
             ctrlMove();
+            eatFood();
+            checkGameOver();
         }
     }
 
     public void checkGameOver() {
         if (wall.crash(snake.getHead()) || snake.suicide()) {
+            snake.setDirection(Direction.STOP);
+            gameState = GameState.GAME_OVER;
+            snake.getPositions().pop();
+            snake.getPositions().add(snake.getLastPosition());
             bgm.pause();
             gom.play();
-            gameState = GameState.GAME_OVER;
         }
     }
 
@@ -140,10 +146,11 @@ public class App extends ApplicationAdapter {
     }
 
     private void algoCtrl() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             ctrlState = CtrlState.MANUAL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             ctrlState = CtrlState.AUTO_LOOP;
+            MoveAlgoFactory.algo(ctrlState).reset();
         }
     }
 
@@ -153,26 +160,48 @@ public class App extends ApplicationAdapter {
         if (algo instanceof NoneAlgo) {
             snake.ctrl();
             snake.checkCD();
-            snake.move(1, 16);
         } else {
-            if (!snake.checkCD()) {
-                snake.setDirection(algo.move(snake.getHead(), snake.getDirection()));
-                snake.move(1, 16);
-            }
+            if (!snake.checkCD())
+                snake.setDirection(algo.move(wall, snake, food));
         }
+        snake.move(1, 16);
     }
 
     private void sign() {
-        font.draw(batch, "UP/W DOWN/S LEFT/A RIGHT/D", 580, 50);
-        font.draw(batch, "score: " + score, 700, 500);
-        font.draw(batch, "speed: " + snake.getSpeedLevel(), 700, 450);
+        font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 840, 500);
+        font.draw(batch, "speed: " + snake.getSpeedLevel(), 710, 500);
+        font.draw(batch, "score: " + score, 580, 500);
+        font.draw(batch, time(), 580, 530);
         if (gameState == GameState.NEWBORN) {
-            font.draw(batch, "Control the direction to start the game.", 560, 300);
+            font.draw(batch, "Control the direction to start the game.", 545, 300);
         } else if (gameState == GameState.GAME_OVER) {
             font.draw(batch, "Game Over!", 682, 300);
+            font.draw(batch, "Enter \"R\" Reset Game!", 625, 280);
         } else {
             font.draw(batch, snake.getDirection().getDESC(), 700, 300);
         }
+        font.draw(batch, (ctrlState == CtrlState.MANUAL ? "*1 " : "  1 ") + CtrlState.MANUAL, 620, 100);
+        font.draw(batch, (ctrlState == CtrlState.AUTO_LOOP ? "*2 " : "  2 ") + CtrlState.AUTO_LOOP, 620, 80);
+        font.draw(batch, "1(slow/-) ~ 9(fast/+)", 620, 60);
+        font.draw(batch, "UP/W DOWN/S LEFT/A RIGHT/D", 620, 40);
+        time();
+    }
+
+    private String time() {
+        if (snake.getDirection() != Direction.STOP && gameState != GameState.GAME_OVER && beginTime == 0) {
+            beginTime = System.currentTimeMillis();
+        }
+        if (gameState == GameState.GAME_OVER && endTime == 0) {
+            endTime = System.currentTimeMillis();
+        }
+        long totalMS = (endTime == 0 ? System.currentTimeMillis() : endTime) - beginTime;
+        int ms = beginTime == 0 ? 0 : (int) (totalMS % 1000);
+        long totalS = totalMS / 1000;
+        int s = beginTime == 0 ? 0 : (int) (totalS % 60);
+        long totalM = totalS / 60;
+        int m = beginTime == 0 ? 0 : (int) totalM;
+        int h = beginTime == 0 ? 0 : (int) (totalM / 60);
+        return String.format("%02d:%02d:%02d.%03d", h, m, s, ms);
     }
 
     @Override

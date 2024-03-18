@@ -5,11 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import xyz.zzzxb.snake.CMathUtils;
 import xyz.zzzxb.snake.enums.Direction;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Snake {
     private final Square square;
     private final Array<Position> positions;
+    private Position lastPosition;
     private Direction direction;
     private float moveSpeed;
     private float speedStep;
@@ -48,7 +53,7 @@ public class Snake {
     }
 
     public void move(int step, int distance) {
-        Position position = positions.get(0).copy();
+        Position position = positions.first().copy();
         if (!cd) {
             switch (direction) {
                 case UP:
@@ -66,6 +71,7 @@ public class Snake {
             }
             positions.insert(0, position);
             if (positions.size > len) {
+                lastPosition = positions.get(positions.size - 1);
                 positions.removeIndex(positions.size - 1);
             }
             cd = true;
@@ -89,12 +95,28 @@ public class Snake {
         return cd;
     }
 
+    public Position getLastPosition() {
+        return lastPosition;
+    }
+
     public boolean suicide() {
-        return false;
+        boolean firstMeet = false;
+        boolean crash = false;
+        for (Position position : this.positions) {
+            if (!firstMeet) {
+                firstMeet = true;
+                continue;
+            }
+            crash = this.positions.first().equals(position);
+            if (crash) {
+                break;
+            }
+        }
+        return crash;
     }
 
     public Position getHead() {
-        return positions.peek();
+        return positions.first();
     }
 
     public void ctrl() {
@@ -121,19 +143,16 @@ public class Snake {
     }
 
     public void speedCtrl() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-            if (moveSpeed > minSpeed) {
-                this.moveSpeed -= speedStep;
-            }
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            if (moveSpeed < maxSpeed) {
-                this.moveSpeed += speedStep;
-            }
+        if (moveSpeed > minSpeed && Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            this.moveSpeed = CMathUtils.sum(this.moveSpeed, -this.speedStep);
+        } else if (moveSpeed < maxSpeed && Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            this.moveSpeed = CMathUtils.sum(this.moveSpeed, this.speedStep);
         }
     }
 
     public int getSpeedLevel() {
-        return (int) ((this.maxSpeed - this.minSpeed) / speedStep) - (int) ((moveSpeed - this.minSpeed) / speedStep) + 1;
+        return new BigDecimal(String.valueOf(CMathUtils.sum(this.maxSpeed, -this.moveSpeed)))
+                .divide(new BigDecimal(String.valueOf(speedStep)), 0, RoundingMode.HALF_UP).intValue() + 1;
     }
 
     public Array<Position> getPositions() {

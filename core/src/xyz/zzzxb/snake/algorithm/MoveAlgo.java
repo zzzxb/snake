@@ -1,7 +1,10 @@
 package xyz.zzzxb.snake.algorithm;
 
 import xyz.zzzxb.snake.enums.Direction;
+import xyz.zzzxb.snake.game.Food;
 import xyz.zzzxb.snake.game.Position;
+import xyz.zzzxb.snake.game.Snake;
+import xyz.zzzxb.snake.game.Wall;
 
 /**
  * zzzxb
@@ -9,7 +12,7 @@ import xyz.zzzxb.snake.game.Position;
  */
 public interface MoveAlgo {
 
-    Direction move(Position head, Direction direction);
+    Direction move(Wall wall, Snake snake, Food food);
 
     void reset();
 

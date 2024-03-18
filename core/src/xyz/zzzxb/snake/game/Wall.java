@@ -36,6 +36,22 @@ public class Wall {
                 || position.getY() <= 0 || position.getY() >= this.y + this.height;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
     public void dispose() {
         square.dispose();
     }
