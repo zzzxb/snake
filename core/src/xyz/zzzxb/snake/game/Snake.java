@@ -11,35 +11,35 @@ public class Snake {
     private final Square square;
     private final Array<Position> positions;
     private Direction direction;
-    private final float originalSpeed;
     private float moveSpeed;
+    private float speedStep;
+    private float minSpeed;
+    private float maxSpeed;
     private float speedDeltaTime;
     private int len;
+    private boolean cd;
 
     public Snake(Color color, int width, int height, float speed) {
-        this.originalSpeed = speed;
         square = new Square(color, width, height, true);
         positions = new Array<>();
         init(speed);
     }
 
     public void init() {
-        init(this.originalSpeed);
+        init(this.moveSpeed);
     }
 
     public void init(float speed) {
         this.positions.clear();
-        this.positions.add(new Position(512f, 512f));
+        this.positions.add(new Position(256f, 256f));
         this.direction = Direction.STOP;
         this.moveSpeed = speed;
         this.len = this.positions.size;
     }
 
     public void draw(SpriteBatch sprite) {
-        if (speedDeltaTime <= moveSpeed) {
-            for (Position p : positions) {
-                square.draw(sprite, p);
-            }
+        for (Position p : positions) {
+            square.draw(sprite, p);
         }
     }
 
@@ -48,10 +48,8 @@ public class Snake {
     }
 
     public void move(int step, int distance) {
-        float deltaTime = Gdx.graphics.getDeltaTime();
-        speedDeltaTime += deltaTime;
         Position position = positions.get(0).copy();
-        if (speedDeltaTime >= moveSpeed) {
+        if (!cd) {
             switch (direction) {
                 case UP:
                     position.moveY(step, distance);
@@ -66,12 +64,29 @@ public class Snake {
                     position.moveX(step, distance);
                     break;
             }
-            speedDeltaTime = 0;
             positions.insert(0, position);
-            if(positions.size > len) {
+            if (positions.size > len) {
                 positions.removeIndex(positions.size - 1);
             }
+            cd = true;
         }
+    }
+
+    // true 冷却中， false 冷却完毕
+    public boolean checkCD() {
+        if (!cd) {
+            return false;
+        }
+
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        speedDeltaTime += deltaTime;
+        if (speedDeltaTime >= moveSpeed) {
+            speedDeltaTime = 0;
+            cd = false;
+        } else {
+            cd = true;
+        }
+        return cd;
     }
 
     public boolean suicide() {
@@ -79,7 +94,7 @@ public class Snake {
     }
 
     public Position getHead() {
-        return positions.get(0);
+        return positions.peek();
     }
 
     public void ctrl() {
@@ -92,20 +107,33 @@ public class Snake {
         } else if (direction != Direction.LEFT && (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
             direction = Direction.RIGHT;
         }
-        if (this.moveSpeed < 0.09f && Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            this.moveSpeed += 0.01f;
-        }
-        if (this.moveSpeed > 0.02 && Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-            this.moveSpeed -= 0.01f;
+    }
+
+    public void setSpeed(float speedStep, float minSpeed, float maxSpeed) {
+        setSpeed(this.moveSpeed, speedStep, minSpeed, maxSpeed);
+    }
+
+    public void setSpeed(float initSpeed, float speedStep, float minSpeed, float maxSpeed) {
+        this.speedStep = speedStep;
+        this.minSpeed = minSpeed;
+        this.maxSpeed = maxSpeed;
+        this.moveSpeed = initSpeed;
+    }
+
+    public void speedCtrl() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            if (moveSpeed > minSpeed) {
+                this.moveSpeed -= speedStep;
+            }
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            if (moveSpeed < maxSpeed) {
+                this.moveSpeed += speedStep;
+            }
         }
     }
 
     public int getSpeedLevel() {
-        return 10 -(int)(this.moveSpeed / 0.01);
-    }
-
-    public float getSpeedDeltaTime() {
-        return speedDeltaTime;
+        return (int) ((this.maxSpeed - this.minSpeed) / speedStep) - (int) ((moveSpeed - this.minSpeed) / speedStep) + 1;
     }
 
     public Array<Position> getPositions() {
@@ -114,6 +142,14 @@ public class Snake {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        this.moveSpeed = moveSpeed;
     }
 
     public void setDirection(Direction direction) {

@@ -12,7 +12,7 @@ public class DesktopLauncher {
 		config.setForegroundFPS(AppConfig.FPS);
 		config.setTitle(AppConfig.TITLE);
 		config.setWindowedMode(AppConfig.WINDOW_WIDTH, AppConfig.WINDOW_HEIGHT);
-		config.setResizable(false);
+//		config.setResizable(false);
 		config.setWindowIcon("icon16.png", "icon32.png", "icon48.png", "icon64.png");
 		new Lwjgl3Application(new App(), config);
 	}

@@ -43,4 +43,12 @@ public class Position {
     public Position copy() {
         return new Position(this.x, this.y);
     }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

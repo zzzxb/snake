@@ -32,7 +32,7 @@ public class Food {
         if (position != null) {
             square.draw(batch, position);
             Position copy = position.copy();
-            copy.setPosition(copy.getX() + 8, copy.getY() + 8);
+            copy.setPosition(copy.getX() + 4, copy.getY() + 4);
             square1.draw(batch, copy);
         }
     }
