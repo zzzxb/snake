@@ -10,9 +10,16 @@ import java.util.Objects;
  */
 public class MoveAlgoFactory {
     public static MoveAlgo algo(CtrlState ctrlState) {
-        if (Objects.requireNonNull(ctrlState) == CtrlState.AUTO_LOOP) {
-            return LoopMove.INSTANCE;
+        switch (ctrlState) {
+            case AUTO_LOOP: return LoopMove.INSTANCE;
+            case CUSTOM_MOVE: return CustomMove.INSTANCE;
         }
         return NoneAlgo.INSTANCE;
+    }
+
+    public static void dispose() {
+        for (CtrlState value : CtrlState.values()) {
+            algo(value).dispose();
+        }
     }
 }

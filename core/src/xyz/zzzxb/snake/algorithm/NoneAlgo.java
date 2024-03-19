@@ -1,5 +1,6 @@
 package xyz.zzzxb.snake.algorithm;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import xyz.zzzxb.snake.enums.Direction;
 import xyz.zzzxb.snake.game.Food;
 import xyz.zzzxb.snake.game.Position;
@@ -17,5 +18,14 @@ public class NoneAlgo implements MoveAlgo {
 
     @Override
     public void reset() {
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+
+    }
+
+    @Override
+    public void dispose() {
     }
 }

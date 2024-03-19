@@ -56,6 +56,10 @@ public class Food {
         return new Array<>(positions);
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
     public void clearFood() {
         position = null;
     }

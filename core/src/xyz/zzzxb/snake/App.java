@@ -81,6 +81,7 @@ public class App extends ApplicationAdapter {
 
         batch.begin();
         sign();
+        MoveAlgoFactory.algo(ctrlState).draw(batch);
         snake.draw(batch);
         food.draw(batch);
         wall.draw(batch);
@@ -88,6 +89,19 @@ public class App extends ApplicationAdapter {
 
         gameCtrl();
     }
+
+    private void algoCtrl() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            ctrlState = CtrlState.MANUAL;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            ctrlState = CtrlState.AUTO_LOOP;
+            MoveAlgoFactory.algo(ctrlState).reset();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            ctrlState = CtrlState.CUSTOM_MOVE;
+//            MoveAlgoFactory.algo(ctrlState).reset();
+        }
+    }
+
 
     private void gameCtrl() {
         // 退出游戏
@@ -143,15 +157,6 @@ public class App extends ApplicationAdapter {
         }
     }
 
-    private void algoCtrl() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            ctrlState = CtrlState.MANUAL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            ctrlState = CtrlState.AUTO_LOOP;
-            MoveAlgoFactory.algo(ctrlState).reset();
-        }
-    }
-
     private void ctrlMove() {
         // 贪吃蛇每次移动，都是有cd的，不然移动过快, 冷却完毕即可移动
         MoveAlgo algo = MoveAlgoFactory.algo(ctrlState);
@@ -204,6 +209,7 @@ public class App extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        MoveAlgoFactory.dispose();
         font.dispose();
         bgm.dispose();
         gom.dispose();

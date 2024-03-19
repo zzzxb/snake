@@ -11,5 +11,6 @@ import java.util.function.Supplier;
  */
 public enum CtrlState {
     MANUAL,
-    AUTO_LOOP;
+    AUTO_LOOP,
+    CUSTOM_MOVE
 }

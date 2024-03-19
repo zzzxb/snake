@@ -1,5 +1,6 @@
 package xyz.zzzxb.snake.algorithm;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import xyz.zzzxb.snake.enums.Direction;
 import xyz.zzzxb.snake.game.Food;
 import xyz.zzzxb.snake.game.Position;
@@ -16,4 +17,7 @@ public interface MoveAlgo {
 
     void reset();
 
+    void draw(SpriteBatch batch);
+
+    void dispose();
 }
