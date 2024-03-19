@@ -1,20 +1,11 @@
 package xyz.zzzxb.snake;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
-import org.omg.PortableInterceptor.ACTIVE;
 import xyz.zzzxb.snake.algorithm.MoveAlgo;
 import xyz.zzzxb.snake.algorithm.MoveAlgoFactory;
 import xyz.zzzxb.snake.algorithm.NoneAlgo;
@@ -36,7 +27,6 @@ public class App extends ApplicationAdapter {
     @Override
     public void create() {
         batch = new SpriteBatch();
-
         wall = new Wall(Color.BLACK, 512, 512, 16, 16);
         snake = new Snake(new Color(0x3aa97cff), 16, 16, 0.05f);
         snake.setSpeed(0.01f, 0.01f, 0.09f);
@@ -70,6 +60,19 @@ public class App extends ApplicationAdapter {
             gameInfo.setCtrlState(CtrlState.CUSTOM_MOVE);
         }
     }
+
+    private void ctrlMove() {
+        MoveAlgo algo = MoveAlgoFactory.algo(gameInfo.getCtrlState());
+        if (algo instanceof NoneAlgo) {
+            snake.ctrl();
+            snake.checkCD();
+        } else {
+            if(!snake.checkCD())
+                snake.setDirection(algo.move(wall, snake, food));
+        }
+        snake.move(1, 16);
+    }
+
 
 
     private void gameCtrl() {
@@ -124,18 +127,6 @@ public class App extends ApplicationAdapter {
             snake.addBody(gameInfo.incrScore());
             food.randomPosition(snake.getPositions());
         }
-    }
-
-    private void ctrlMove() {
-        MoveAlgo algo = MoveAlgoFactory.algo(gameInfo.getCtrlState());
-        if (algo instanceof NoneAlgo) {
-            snake.ctrl();
-            snake.checkCD();
-        } else {
-            if (!snake.checkCD())
-                snake.setDirection(algo.move(wall, snake, food));
-        }
-        snake.move(1, 16);
     }
 
     @Override
