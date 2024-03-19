@@ -14,7 +14,6 @@ import java.math.RoundingMode;
 public class Snake {
     private final Square square;
     private final Array<Position> positions;
-    private Position lastPosition;
     private Direction direction;
     private float moveSpeed;
     private float speedStep;
@@ -71,7 +70,6 @@ public class Snake {
             }
             positions.insert(0, position);
             if (positions.size > len) {
-                lastPosition = positions.get(positions.size - 1);
                 positions.removeIndex(positions.size - 1);
             }
             cd = true;
@@ -93,10 +91,6 @@ public class Snake {
             cd = true;
         }
         return cd;
-    }
-
-    public Position getLastPosition() {
-        return lastPosition;
     }
 
     public boolean suicide() {

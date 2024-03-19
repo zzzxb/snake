@@ -129,8 +129,6 @@ public class App extends ApplicationAdapter {
         if (wall.crash(snake.getHead()) || snake.suicide()) {
             snake.setDirection(Direction.STOP);
             gameState = GameState.GAME_OVER;
-            snake.getPositions().pop();
-            snake.getPositions().add(snake.getLastPosition());
             bgm.pause();
             gom.play();
         }
