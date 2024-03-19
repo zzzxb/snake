@@ -27,17 +27,11 @@ import java.util.function.Supplier;
 
 public class App extends ApplicationAdapter {
     SpriteBatch batch;
-
     Wall wall;
     Snake snake;
     Food food;
-    GameInfo gameInfo;
     GameSound sound;
-
-    int score;
-    GameState gameState;
-    CtrlState ctrlState;
-
+    GameInfo gameInfo;
 
     @Override
     public void create() {
@@ -50,9 +44,6 @@ public class App extends ApplicationAdapter {
         food.randomPosition(snake.getPositions());
         gameInfo = new GameInfo();
         sound = new GameSound();
-
-        gameState = GameState.NEWBORN;
-        ctrlState = CtrlState.MANUAL;
     }
 
     @Override
@@ -60,8 +51,8 @@ public class App extends ApplicationAdapter {
         ScreenUtils.clear(0.81f, 0.87f, 1, 1);
 
         batch.begin();
-        MoveAlgoFactory.algo(ctrlState).drawAuxiliaryLine(batch);
-        gameInfo.drawGameInfo(batch, snake, gameState, ctrlState, score);
+        MoveAlgoFactory.algo(gameInfo.getCtrlState()).drawAuxiliaryLine(batch);
+        gameInfo.drawGameInfo(batch, snake);
         snake.draw(batch);
         food.draw(batch);
         wall.draw(batch);
@@ -72,38 +63,43 @@ public class App extends ApplicationAdapter {
 
     private void algoCtrl() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            ctrlState = CtrlState.MANUAL;
+            gameInfo.setCtrlState(CtrlState.MANUAL);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            ctrlState = CtrlState.AUTO_LOOP;
-            MoveAlgoFactory.algo(ctrlState).reset();
+            gameInfo.setCtrlState(CtrlState.AUTO_LOOP);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            ctrlState = CtrlState.CUSTOM_MOVE;
+            gameInfo.setCtrlState(CtrlState.CUSTOM_MOVE);
         }
     }
 
 
     private void gameCtrl() {
+        algoCtrl();
+        snake.speedCtrl();
+        resetGame();
+        beginGame();
+
         // 退出游戏
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
             Gdx.app.exit();
         }
-        snake.speedCtrl(); // 移动速度控制
-        algoCtrl(); // 移动算法控制
+    }
 
-        // 游戏结束, 按R重新开始
-        if (gameState == GameState.GAME_OVER && Gdx.input.isKeyPressed(Input.Keys.R)) {
-            gameState = GameState.ACTIVE;
-            score = 0;
+    public void resetGame() {
+        if (gameInfo.gameStateEq(GameState.GAME_OVER)  && Gdx.input.isKeyPressed(Input.Keys.R)) {
+            gameInfo.setGameState(GameState.ACTIVE);
             snake.init();
             gameInfo.init();
             sound.init();
-            MoveAlgoFactory.algo(ctrlState).reset();
-        } else if (gameState != GameState.GAME_OVER) {
+        }
+    }
+
+    public void beginGame() {
+        if (!gameInfo.gameStateEq(GameState.GAME_OVER)) {
             // 游戏开始时，人物移动时播放音乐
             if (!snake.directionEq(Direction.STOP)  && !sound.getBgm().isPlaying()) {
                 sound.resetGOM();
                 sound.getBgm().play();
-                gameState = GameState.ACTIVE;
+                gameInfo.setGameState(GameState.ACTIVE);
             }
             ctrlMove();
             eatFood();
@@ -114,7 +110,9 @@ public class App extends ApplicationAdapter {
     public void checkGameOver() {
         if (wall.crash(snake.getHead()) || snake.suicide()) {
             snake.setDirection(Direction.STOP);
-            gameState = GameState.GAME_OVER;
+            gameInfo.setGameState(GameState.GAME_OVER);
+            snake.getPositions().removeIndex(0);
+            snake.getPositions().add(snake.getLastPosition());
             sound.getBgm().pause();
             sound.getGom().play();
         }
@@ -123,15 +121,13 @@ public class App extends ApplicationAdapter {
     private void eatFood() {
         if (food.crash(snake.getHead())) {
             sound.getGold().setVolume(sound.getGold().play(), 0.03f);
-            score += 1;
-            snake.addBody(score);
+            snake.addBody(gameInfo.incrScore());
             food.randomPosition(snake.getPositions());
         }
     }
 
     private void ctrlMove() {
-        // 贪吃蛇每次移动，都是有cd的，不然移动过快, 冷却完毕即可移动
-        MoveAlgo algo = MoveAlgoFactory.algo(ctrlState);
+        MoveAlgo algo = MoveAlgoFactory.algo(gameInfo.getCtrlState());
         if (algo instanceof NoneAlgo) {
             snake.ctrl();
             snake.checkCD();

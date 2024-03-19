@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import xyz.zzzxb.snake.App;
+import xyz.zzzxb.snake.algorithm.MoveAlgoFactory;
 import xyz.zzzxb.snake.enums.CtrlState;
 import xyz.zzzxb.snake.enums.Direction;
 import xyz.zzzxb.snake.enums.GameState;
@@ -17,18 +18,26 @@ import xyz.zzzxb.snake.enums.GameState;
 public class GameInfo {
     private final BitmapFont font;
     private long beginTime = 0, endTime = 0;
+    private int score;
+    private GameState gameState;
+    private CtrlState ctrlState;
 
     public GameInfo() {
         TextureRegion tr = new TextureRegion(new Texture("pt_mono.png"));
         font = new BitmapFont(Gdx.files.internal("pt_mono.fnt"), tr);
+        init();
     }
 
     public void init() {
         beginTime = 0;
         endTime = 0;
+        score = 0;
+        gameState = GameState.NEWBORN;
+        ctrlState = CtrlState.MANUAL;
+        MoveAlgoFactory.algo(ctrlState).reset();
     }
 
-    public  void drawGameInfo(SpriteBatch batch, Snake snake, GameState gameState, CtrlState ctrlState, int score) {
+    public  void drawGameInfo(SpriteBatch batch, Snake snake) {
         font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 840, 500);
         font.draw(batch, "speed: " + snake.getSpeedLevel(), 710, 500);
         font.draw(batch, "score: " + score, 580, 500);
@@ -62,6 +71,39 @@ public class GameInfo {
         int m = beginTime == 0 ? 0 : (int) totalM;
         int h = beginTime == 0 ? 0 : (int) (totalM / 60);
         return String.format("%02d:%02d:%02d.%03d", h, m, s, ms);
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int incrScore() {
+        return (score += 1);
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public boolean gameStateEq(GameState gameState) {
+        return this.gameState == gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+    public CtrlState getCtrlState() {
+        return ctrlState;
+    }
+
+    public void setCtrlState(CtrlState ctrlState) {
+        this.ctrlState = ctrlState;
+        MoveAlgoFactory.algo(this.ctrlState).reset();
     }
 
     public void dispose() {
