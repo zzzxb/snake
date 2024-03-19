@@ -1,4 +1,4 @@
-package xyz.zzzxb.snake;
+package xyz.zzzxb.snake.util;
 
 import java.math.BigDecimal;
 

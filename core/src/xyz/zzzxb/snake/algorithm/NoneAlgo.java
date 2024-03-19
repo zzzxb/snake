@@ -17,15 +17,11 @@ public class NoneAlgo implements MoveAlgo {
     public Direction move(Wall wall, Snake snake, Food food){return  null;}
 
     @Override
-    public void reset() {
-    }
+    public void reset() {}
 
     @Override
-    public void draw(SpriteBatch batch) {
-
-    }
+    public void drawAuxiliaryLine(SpriteBatch batch) {}
 
     @Override
-    public void dispose() {
-    }
+    public void dispose() {}
 }

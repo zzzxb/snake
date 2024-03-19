@@ -21,53 +21,35 @@ import xyz.zzzxb.snake.algorithm.NoneAlgo;
 import xyz.zzzxb.snake.enums.CtrlState;
 import xyz.zzzxb.snake.enums.Direction;
 import xyz.zzzxb.snake.enums.GameState;
-import xyz.zzzxb.snake.game.Food;
-import xyz.zzzxb.snake.game.Snake;
-import xyz.zzzxb.snake.game.Square;
-import xyz.zzzxb.snake.game.Wall;
+import xyz.zzzxb.snake.game.*;
 
 import java.util.function.Supplier;
 
 public class App extends ApplicationAdapter {
     SpriteBatch batch;
-    OrthographicCamera camera;
 
     Wall wall;
     Snake snake;
     Food food;
+    GameInfo gameInfo;
+    GameSound sound;
 
     int score;
     GameState gameState;
     CtrlState ctrlState;
 
-    BitmapFont font;
-    TextureRegion tr;
-
-    Music bgm;
-    Music gom;
-    Sound gold;
-
-    long beginTime, endTime;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
+
         wall = new Wall(Color.BLACK, 512, 512, 16, 16);
         snake = new Snake(new Color(0x3aa97cff), 16, 16, 0.05f);
         snake.setSpeed(0.01f, 0.01f, 0.09f);
         food = new Food(new Color(0xfbf236ff), 16, 16);
         food.randomPosition(snake.getPositions());
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
-        tr = new TextureRegion(new Texture("pt_mono.png"));
-        font = new BitmapFont(Gdx.files.internal("pt_mono.fnt"), tr);
-
-        bgm = Gdx.audio.newMusic(Gdx.files.internal("WhereIsTheLove.mp3"));
-        bgm.setVolume(0.1f);
-        bgm.setLooping(true);
-        gom = Gdx.audio.newMusic(Gdx.files.internal("game-over.mp3"));
-        gom.setVolume(0.02f);
-        gold = Gdx.audio.newSound(Gdx.files.internal("gold.mp3"));
+        gameInfo = new GameInfo();
+        sound = new GameSound();
 
         gameState = GameState.NEWBORN;
         ctrlState = CtrlState.MANUAL;
@@ -76,12 +58,10 @@ public class App extends ApplicationAdapter {
     @Override
     public void render() {
         ScreenUtils.clear(0.81f, 0.87f, 1, 1);
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        sign();
-        MoveAlgoFactory.algo(ctrlState).draw(batch);
+        MoveAlgoFactory.algo(ctrlState).drawAuxiliaryLine(batch);
+        gameInfo.drawGameInfo(batch, snake, gameState, ctrlState, score);
         snake.draw(batch);
         food.draw(batch);
         wall.draw(batch);
@@ -98,7 +78,6 @@ public class App extends ApplicationAdapter {
             MoveAlgoFactory.algo(ctrlState).reset();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             ctrlState = CtrlState.CUSTOM_MOVE;
-//            MoveAlgoFactory.algo(ctrlState).reset();
         }
     }
 
@@ -116,21 +95,14 @@ public class App extends ApplicationAdapter {
             gameState = GameState.ACTIVE;
             score = 0;
             snake.init();
-            beginTime = 0;
-            endTime = 0;
-
-            gold.pause();
-            gom.pause();
-            bgm.pause();
-            gom.setPosition(0);
-            bgm.setPosition(0);
+            gameInfo.init();
+            sound.init();
             MoveAlgoFactory.algo(ctrlState).reset();
         } else if (gameState != GameState.GAME_OVER) {
             // 游戏开始时，人物移动时播放音乐
-            if (snake.getDirection() != Direction.STOP && !bgm.isPlaying()) {
-                gom.pause();
-                gom.setPosition(1);
-                bgm.play();
+            if (!snake.directionEq(Direction.STOP)  && !sound.getBgm().isPlaying()) {
+                sound.resetGOM();
+                sound.getBgm().play();
                 gameState = GameState.ACTIVE;
             }
             ctrlMove();
@@ -143,14 +115,14 @@ public class App extends ApplicationAdapter {
         if (wall.crash(snake.getHead()) || snake.suicide()) {
             snake.setDirection(Direction.STOP);
             gameState = GameState.GAME_OVER;
-            bgm.pause();
-            gom.play();
+            sound.getBgm().pause();
+            sound.getGom().play();
         }
     }
 
     private void eatFood() {
         if (food.crash(snake.getHead())) {
-            gold.setVolume(gold.play(), 0.03f);
+            sound.getGold().setVolume(sound.getGold().play(), 0.03f);
             score += 1;
             snake.addBody(score);
             food.randomPosition(snake.getPositions());
@@ -170,50 +142,11 @@ public class App extends ApplicationAdapter {
         snake.move(1, 16);
     }
 
-    private void sign() {
-        font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 840, 500);
-        font.draw(batch, "speed: " + snake.getSpeedLevel(), 710, 500);
-        font.draw(batch, "score: " + score, 580, 500);
-        font.draw(batch, time(), 580, 530);
-        if (gameState == GameState.NEWBORN) {
-            font.draw(batch, "Control the direction to start the game.", 545, 300);
-        } else if (gameState == GameState.GAME_OVER) {
-            font.draw(batch, "Game Over!", 682, 300);
-            font.draw(batch, "Enter \"R\" Reset Game!", 625, 280);
-        } else {
-            font.draw(batch, snake.getDirection().getDESC(), 700, 300);
-        }
-        font.draw(batch, (ctrlState == CtrlState.MANUAL ? "*1 " : "  1 ") + CtrlState.MANUAL, 620, 100);
-        font.draw(batch, (ctrlState == CtrlState.AUTO_LOOP ? "*2 " : "  2 ") + CtrlState.AUTO_LOOP, 620, 80);
-        font.draw(batch, "1(slow/-) ~ 9(fast/+)", 620, 60);
-        font.draw(batch, "UP/W DOWN/S LEFT/A RIGHT/D", 620, 40);
-        time();
-    }
-
-    private String time() {
-        if (snake.getDirection() != Direction.STOP && gameState != GameState.GAME_OVER && beginTime == 0) {
-            beginTime = System.currentTimeMillis();
-        }
-        if (gameState == GameState.GAME_OVER && endTime == 0) {
-            endTime = System.currentTimeMillis();
-        }
-        long totalMS = (endTime == 0 ? System.currentTimeMillis() : endTime) - beginTime;
-        int ms = beginTime == 0 ? 0 : (int) (totalMS % 1000);
-        long totalS = totalMS / 1000;
-        int s = beginTime == 0 ? 0 : (int) (totalS % 60);
-        long totalM = totalS / 60;
-        int m = beginTime == 0 ? 0 : (int) totalM;
-        int h = beginTime == 0 ? 0 : (int) (totalM / 60);
-        return String.format("%02d:%02d:%02d.%03d", h, m, s, ms);
-    }
-
     @Override
     public void dispose() {
         MoveAlgoFactory.dispose();
-        font.dispose();
-        bgm.dispose();
-        gom.dispose();
-        gold.dispose();
+        gameInfo.dispose();
+        sound.dispose();
         food.dispose();
         snake.dispose();
         wall.dispose();

@@ -13,7 +13,7 @@ import java.util.Arrays;
  * zzzxb
  * 2024/3/19
  */
-public class CustomMove implements MoveAlgo {
+public class CustomMove extends AbstractMoveAlgo {
     private final Square square;
     public final static CustomMove INSTANCE = new CustomMove();
     private final Array<Position> algoPath = new Array<>();
@@ -132,7 +132,7 @@ public class CustomMove implements MoveAlgo {
     }
 
     @Override
-    public void draw(SpriteBatch batch) {
+    public void drawAuxiliaryLine(SpriteBatch batch) {
         if (!algoPath.isEmpty() && algoPath.size != 0) {
             for (Position p : algoPath) {
                 square.draw(batch, p);

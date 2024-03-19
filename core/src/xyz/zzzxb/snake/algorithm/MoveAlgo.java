@@ -17,7 +17,7 @@ public interface MoveAlgo {
 
     void reset();
 
-    void draw(SpriteBatch batch);
+    void drawAuxiliaryLine(SpriteBatch batch);
 
     void dispose();
 }

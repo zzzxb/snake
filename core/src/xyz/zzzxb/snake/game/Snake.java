@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
-import xyz.zzzxb.snake.CMathUtils;
+import xyz.zzzxb.snake.util.CMathUtils;
 import xyz.zzzxb.snake.enums.Direction;
 
 import java.math.BigDecimal;
@@ -155,6 +155,9 @@ public class Snake {
 
     public Direction getDirection() {
         return direction;
+    }
+    public boolean directionEq(Direction d) {
+        return this.direction == d;
     }
 
     public float getMoveSpeed() {

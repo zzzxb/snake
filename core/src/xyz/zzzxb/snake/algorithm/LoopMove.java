@@ -11,65 +11,38 @@ import xyz.zzzxb.snake.game.Wall;
  * zzzxb
  * 2024/3/18
  */
-public class LoopMove implements MoveAlgo {
+public class LoopMove extends AbstractMoveAlgo {
     public final static LoopMove INSTANCE = new LoopMove();
-    boolean once;
+    boolean firstMeet;
 
     @Override
     public Direction move(Wall wall, Snake snake, Food food) {
         Position head = snake.getHead();
-        Direction direction = snake.getDirection();
-        if (!once) {
-            once = true;
-            return (snake.getHead().getY() / wall.getY()) % 2 == 0 ? Direction.RIGHT : Direction.LEFT;
+        Direction choosingDir = snake.getDirection();
+
+        if (!firstMeet) {
+            firstMeet = true;
+            choosingDir = (head.getY() / wall.getY()) % 2 == 0 ? Direction.RIGHT : Direction.LEFT;
+        } else if (reachCornerLD(head, wall) && snake.directionEq(Direction.LEFT) ||
+                reachCornerRD(head, wall) && snake.directionEq(Direction.RIGHT)) {
+            choosingDir = Direction.UP;
+        } else if (reachCornerRU(head, wall) && snake.directionEq(Direction.UP)) {
+            choosingDir = Direction.LEFT;
+        } else if (reachCornerLU(head, wall) && snake.directionEq(Direction.UP)) {
+            choosingDir = Direction.RIGHT;
+        } else if (reachEdgeL(head, wall, 1)) {
+            if (!reachEdgeD(head, wall) && snake.directionEq(Direction.LEFT)) choosingDir = Direction.DOWN;
+            else if (snake.directionEq(Direction.DOWN)) choosingDir = Direction.RIGHT;
+        } else if (reachEdgeR(head, wall)) {
+            if (snake.directionEq(Direction.RIGHT)) choosingDir = Direction.DOWN;
+            else if (snake.directionEq(Direction.DOWN)) choosingDir = Direction.LEFT;
         }
 
-        // 左下角、右下角 行为
-        if ((head.getX() <= wall.getX() && direction == Direction.LEFT) ||
-                (head.getX() >= wall.getWidth() && head.getY() <= wall.getY() && direction == Direction.RIGHT)) {
-            return Direction.UP;
-        }
-
-        if (head.getX() >= wall.getWidth() && head.getY() >= wall.getHeight() && direction == Direction.UP) {
-            // 右上角行为
-            return Direction.LEFT;
-        } else if (head.getX() <= wall.getX() && head.getY() >= wall.getHeight() && direction == Direction.UP) {
-            // 左上角行为
-            return Direction.RIGHT;
-        }
-
-        // 左墙面行为
-        if (head.getX() <= wall.getX() + wall.getX() && direction == Direction.LEFT) {
-            if (head.getY() <= wall.getY()) {
-                return Direction.LEFT;
-            }
-            return Direction.DOWN;
-        } else if (head.getX() <= wall.getX() + wall.getX() && direction == Direction.DOWN) {
-            return Direction.RIGHT;
-        }
-
-        // 右墙面行为
-        if (head.getX() >= wall.getWidth() && direction == Direction.RIGHT) {
-            return Direction.DOWN;
-        } else if (head.getX() >= wall.getWidth() && direction == Direction.DOWN) {
-            return Direction.LEFT;
-        }
-
-        return direction;
+        return choosingDir;
     }
 
     @Override
     public void reset() {
-        once = false;
-    }
-
-    @Override
-    public void draw(SpriteBatch batch) {
-
-    }
-
-    @Override
-    public void dispose() {
-
+        firstMeet = false;
     }
 }
