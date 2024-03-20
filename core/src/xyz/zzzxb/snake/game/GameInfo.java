@@ -38,10 +38,16 @@ public class GameInfo {
     }
 
     public  void drawGameInfo(SpriteBatch batch, Snake snake) {
-        font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 840, 500);
-        font.draw(batch, "speed: " + snake.getSpeedLevel(), 710, 500);
-        font.draw(batch, "score: " + score, 580, 500);
-        font.draw(batch, time(snake, gameState), 580, 530);
+        font.draw(batch, time(snake, gameState), 560, 530);
+        font.draw(batch, "Score: " + score, 560, 500);
+        font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 680, 500);
+
+        font.draw(batch, "Speed: " + snake.getSpeedLevel(), 780, 500);
+        font.draw(batch, "Suicide: " + snake.isSuicideState(), 780, 480);
+        font.draw(batch, (ctrlState == CtrlState.MANUAL ? "*1 " : "  1 ") + CtrlState.MANUAL, 760, 460);
+        font.draw(batch, (ctrlState == CtrlState.AUTO_LOOP ? "*2 " : "  2 ") + CtrlState.AUTO_LOOP, 760, 440);
+        font.draw(batch, (ctrlState == CtrlState.CUSTOM_ALGO ? "*3 " : "  3 ") + CtrlState.CUSTOM_ALGO, 760, 420);
+
         if (gameState == GameState.NEWBORN) {
             font.draw(batch, "Control the direction to start the game.", 545, 300);
         } else if (gameState == GameState.GAME_OVER) {
@@ -50,9 +56,7 @@ public class GameInfo {
         } else {
             font.draw(batch, snake.getDirection().getDESC(), 700, 300);
         }
-        font.draw(batch, (ctrlState == CtrlState.MANUAL ? "*1 " : "  1 ") + CtrlState.MANUAL, 620, 100);
-        font.draw(batch, (ctrlState == CtrlState.AUTO_LOOP ? "*2 " : "  2 ") + CtrlState.AUTO_LOOP, 620, 80);
-        font.draw(batch, "1(slow/-) ~ 9(fast/+)", 620, 60);
+        font.draw(batch, "1(Slow/-) ~ 9(Fast/+)", 620, 60);
         font.draw(batch, "UP/W DOWN/S LEFT/A RIGHT/D", 620, 40);
     }
 
@@ -105,6 +109,8 @@ public class GameInfo {
         this.ctrlState = ctrlState;
         MoveAlgoFactory.algo(this.ctrlState).reset();
     }
+
+
 
     public void dispose() {
         font.dispose();

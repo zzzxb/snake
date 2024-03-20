@@ -12,7 +12,7 @@ public class MoveAlgoFactory {
     public static MoveAlgo algo(CtrlState ctrlState) {
         switch (ctrlState) {
             case AUTO_LOOP: return LoopMove.INSTANCE;
-            case CUSTOM_MOVE: return CustomMove.INSTANCE;
+            case CUSTOM_ALGO: return CustomMove.INSTANCE;
         }
         return NoneAlgo.INSTANCE;
     }

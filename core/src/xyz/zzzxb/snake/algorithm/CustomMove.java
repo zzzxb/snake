@@ -19,7 +19,7 @@ public class CustomMove extends AbstractMoveAlgo {
     private final Array<Direction> algoDir = new Array<>();
 
     public CustomMove() {
-        square = new Square(new Color(0, 0, 0, 0.1f), 16, 16, true);
+        square = new Square(new Color(1, 1, 1, 0.2f), 16, 16, true);
     }
 
     @Override
@@ -28,32 +28,32 @@ public class CustomMove extends AbstractMoveAlgo {
         return popDirection();
     }
 
-    private void pathAlgo(float sx , float sy, float fx, float fy, float step, Wall wall, Snake snake, Food food) {
-        float x = sx , y = sy;
+    private void pathAlgo(float sx, float sy, float fx, float fy, float step, Wall wall, Snake snake, Food food) {
+        float x = sx, y = sy;
         Direction direction = null;
 
         do {
             Direction lastDir = algoDir.isEmpty() ? null : algoDir.peek();
-            if (sx > fx &&  lastDir != Direction.RIGHT) {
+            if (sx > fx && lastDir != Direction.RIGHT && !algoPath.contains(new Position(x - step, y), false)) {
                 x -= step;
                 direction = Direction.LEFT;
-            } else if (sx < fx && lastDir != Direction.LEFT) {
+            } else if (sx < fx && lastDir != Direction.LEFT && !algoPath.contains(new Position(x + step, y), false)) {
                 x += step;
                 direction = Direction.RIGHT;
-            } else if (sy > fy && lastDir != Direction.UP) {
+            } else if (sy > fy && lastDir != Direction.UP && !algoPath.contains(new Position(x, y - step), false)) {
                 y -= step;
                 direction = Direction.DOWN;
-            } else if (sy < fy && lastDir != Direction.DOWN) {
+            } else if (sy < fy && lastDir != Direction.DOWN && !algoPath.contains(new Position(x, y + step), false)) {
                 y += step;
                 direction = Direction.UP;
             }
-        }while (snake.getPositions().contains(new Position(x, y), false));
+        } while (snake.getPositions().contains(new Position(x, y), false));
 
         if (direction != null) {
             algoPath.add(new Position(x, y));
             algoDir.add(direction);
         }
-        if((sx != fx || sy != fy)) {
+        if ((sx != fx || sy != fy)) {
             pathAlgo(x, y, fx, fy, step, wall, snake, food);
         }
     }
@@ -81,7 +81,7 @@ public class CustomMove extends AbstractMoveAlgo {
 
     @Override
     public void drawAuxiliaryLine(SpriteBatch batch) {
-        if (!algoPath.isEmpty() && algoPath.size != 0) {
+        if (!algoPath.isEmpty()) {
             for (Position p : algoPath) {
                 square.draw(batch, p);
             }

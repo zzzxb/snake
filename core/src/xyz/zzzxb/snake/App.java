@@ -41,10 +41,10 @@ public class App extends ApplicationAdapter {
         ScreenUtils.clear(0.81f, 0.87f, 1, 1);
 
         batch.begin();
-        MoveAlgoFactory.algo(gameInfo.getCtrlState()).drawAuxiliaryLine(batch);
         gameInfo.drawGameInfo(batch, snake);
-        snake.draw(batch);
+        MoveAlgoFactory.algo(gameInfo.getCtrlState()).drawAuxiliaryLine(batch);
         food.draw(batch);
+        snake.draw(batch);
         wall.draw(batch);
         batch.end();
 
@@ -52,12 +52,12 @@ public class App extends ApplicationAdapter {
     }
 
     private void algoCtrl() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && gameInfo.getCtrlState() != CtrlState.MANUAL) {
             gameInfo.setCtrlState(CtrlState.MANUAL);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && gameInfo.getCtrlState() != CtrlState.AUTO_LOOP) {
             gameInfo.setCtrlState(CtrlState.AUTO_LOOP);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            gameInfo.setCtrlState(CtrlState.CUSTOM_MOVE);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3) && gameInfo.getCtrlState() != CtrlState.CUSTOM_ALGO) {
+            gameInfo.setCtrlState(CtrlState.CUSTOM_ALGO);
         }
     }
 
@@ -67,17 +67,14 @@ public class App extends ApplicationAdapter {
             snake.ctrl();
             snake.checkCD();
         } else {
-            if(!snake.checkCD())
+            if (!snake.checkCD())
                 snake.setDirection(algo.move(wall, snake, food));
         }
         snake.move(1, 16);
     }
 
 
-
     private void gameCtrl() {
-        algoCtrl();
-        snake.speedCtrl();
         resetGame();
         beginGame();
 
@@ -88,7 +85,7 @@ public class App extends ApplicationAdapter {
     }
 
     public void resetGame() {
-        if (gameInfo.gameStateEq(GameState.GAME_OVER)  && Gdx.input.isKeyPressed(Input.Keys.R)) {
+        if (gameInfo.gameStateEq(GameState.GAME_OVER) && Gdx.input.isKeyPressed(Input.Keys.R)) {
             gameInfo.setGameState(GameState.ACTIVE);
             snake.init();
             gameInfo.init();
@@ -97,9 +94,15 @@ public class App extends ApplicationAdapter {
     }
 
     public void beginGame() {
+        algoCtrl();
+        snake.speedCtrl();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            snake.setSuicideState(!snake.isSuicideState());
+        }
+
         if (!gameInfo.gameStateEq(GameState.GAME_OVER)) {
             // 游戏开始时，人物移动时播放音乐
-            if (!snake.directionEq(Direction.STOP)  && !sound.getBgm().isPlaying()) {
+            if (!snake.directionEq(Direction.STOP) && !sound.getBgm().isPlaying()) {
                 sound.resetGOM();
                 sound.getBgm().play();
                 gameInfo.setGameState(GameState.ACTIVE);
@@ -111,7 +114,7 @@ public class App extends ApplicationAdapter {
     }
 
     public void checkGameOver() {
-        if (wall.crash(snake.getHead()) || snake.suicide()) {
+        if (wall.crash(snake.getHead()) || (snake.suicide())) {
             snake.setDirection(Direction.STOP);
             gameInfo.setGameState(GameState.GAME_OVER);
             snake.getPositions().removeIndex(0);

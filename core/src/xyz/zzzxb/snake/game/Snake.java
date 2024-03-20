@@ -23,11 +23,13 @@ public class Snake {
     private float speedDeltaTime;
     private int len;
     private boolean cd;
+    boolean suicideState;
 
     public Snake(Color color, int width, int height, float speed) {
         square = new Square(color, width, height, true);
         positions = new Array<>();
         init(speed);
+        suicideState = true;
     }
 
     public void init() {
@@ -96,6 +98,10 @@ public class Snake {
     }
 
     public boolean suicide() {
+        if (!isSuicideState()) {
+            return false;
+        }
+
         boolean firstMeet = false;
         boolean crash = false;
         for (Position position : this.positions) {
@@ -109,6 +115,14 @@ public class Snake {
             }
         }
         return crash;
+    }
+
+    public boolean isSuicideState() {
+        return suicideState;
+    }
+
+    public void setSuicideState(boolean suicideState) {
+        this.suicideState = suicideState;
     }
 
     public Position getHead() {
@@ -162,6 +176,7 @@ public class Snake {
     public Direction getDirection() {
         return direction;
     }
+
     public boolean directionEq(Direction d) {
         return this.direction == d;
     }
@@ -175,7 +190,16 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
-        this.direction = direction;
+        if (!isOppositeDirection(direction)) {
+            this.direction = direction;
+        }
+    }
+
+    public boolean isOppositeDirection(Direction direction) {
+        return this.direction == Direction.DOWN && direction == Direction.UP ||
+                this.direction == Direction.UP && direction == Direction.DOWN ||
+                this.direction == Direction.LEFT && direction == Direction.RIGHT ||
+                this.direction == Direction.RIGHT && direction == Direction.LEFT;
     }
 
     public void dispose() {
