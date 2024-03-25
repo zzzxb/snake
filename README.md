@@ -13,7 +13,6 @@
   * 右: d/→
   * 加速: +
   * 减速: -
-  * 暂停: p
   * 开始: 任意方向键
 
-![cover](assets/cover.png)
+![cover](assets/cover.gif)
