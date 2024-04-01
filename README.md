@@ -5,6 +5,7 @@
 * gradle: 7.5.1
 
 ![cover](assets/help.png)
+![cover](assets/cover.gif)
 
 * mac
 ```shell
