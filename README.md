@@ -1,15 +1,25 @@
 # snake
 
+![snake](assets/img.png)
+
+* jdk version: 21
+* gradle version: 8.7
+* mac `java -jar -XstartOnFirstThread snake-1.0.0.jar`
+* other `java -jar snake-1.0.0.jar`
+* **Up(`W`) Down(`S`) Left(`A`) Right(`D`) Quit(`Q`) Reset(`R`)**
+
+## LibGDX
+
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
 This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
 
-## Platforms
+### Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
 - `lwjgl3`: Primary desktop platform using LWJGL3.
 
-## Gradle
+### Gradle
 
 This project uses [Gradle](https://gradle.org/) to manage dependencies.
 The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
