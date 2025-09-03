@@ -2,8 +2,9 @@ package cn.tofucat.snake.world;
 
 import cn.tofucat.snake.SnakeGame;
 import cn.tofucat.snake.animation.StageFade;
-import com.badlogic.gdx.Gdx;
+import cn.tofucat.snake.conf.Config;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -29,7 +30,7 @@ public class LogoReveal extends ScreenAdapter {
         Sprite sprite = fade.process(delta, true);
         if (sprite == null) game.setScreen(new GameWorld(game));
 
-        ScreenUtils.clear(0.18f, 0.20f, 0.25f, 1f);
+        ScreenUtils.clear(Color.BLACK);
         game.viewport.apply();
         game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
 
@@ -45,8 +46,8 @@ public class LogoReveal extends ScreenAdapter {
 
     private Sprite createSprite(String fileName) {
         Sprite sprite = new Sprite(new Texture(fileName));
-        sprite.setPosition(((float) Gdx.graphics.getWidth() - sprite.getWidth()) / 2,
-            (float) Gdx.graphics.getHeight() / 2 - sprite.getHeight() / 4);
+        sprite.setPosition(((float) Config.instance.WINDOW_WIDTH - sprite.getWidth()) / 2,
+            (float) Config.instance.WINDOW_HEIGHT / 2 - sprite.getHeight() / 4);
         return sprite;
     }
 }

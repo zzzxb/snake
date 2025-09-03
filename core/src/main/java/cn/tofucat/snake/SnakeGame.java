@@ -13,7 +13,7 @@ public class SnakeGame extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        viewport = new FitViewport(Config.instance.WINDOW_WIDTH,Config.instance.WINDOW_HEIGHT);
+        viewport = new FitViewport(Config.instance.WINDOW_WIDTH, Config.instance.WINDOW_HEIGHT);
         setScreen(new LogoReveal(this));
     }
 

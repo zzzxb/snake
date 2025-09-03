@@ -3,6 +3,7 @@ package cn.tofucat.snake.animation;
 import cn.tofucat.gdx.effect.FadeEffect;
 import cn.tofucat.gdx.effect.StageEffect;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,7 +26,7 @@ public class StageFade {
     }
 
     public Sprite process(float delta, boolean dispose) {
-        if(effect.complete()) {
+        if(effect.complete() || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             removeFirst(dispose);
             nowSprite = null;
             effect.init();
