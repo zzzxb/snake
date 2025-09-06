@@ -5,10 +5,10 @@
 * `R`: Reset
 * `P`: Play/Pause
 * Move
-    * `W`: Up
-    * `D`: Down
-    * `A`: Left
-    * `D`: Right
+    * `K`: Up
+    * `J`: Down
+    * `H`: Left
+    * `L`: Right
 * Level
     * `1` a food. snail.
     * `2` More food. progressive.
