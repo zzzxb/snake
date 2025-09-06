@@ -1,4 +1,4 @@
-package cn.tofucat.snake.entities;
+package cn.tofucat.snake.entity;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

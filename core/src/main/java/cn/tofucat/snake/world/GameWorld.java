@@ -1,8 +1,8 @@
 package cn.tofucat.snake.world;
 
 import cn.tofucat.snake.SnakeGame;
-import cn.tofucat.snake.conf.Config;
-import cn.tofucat.snake.entities.Wall;
+import cn.tofucat.snake.entity.Floor;
+import cn.tofucat.snake.entity.Wall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class GameWorld  extends ScreenAdapter {
     SnakeGame game;
     AssetManager assetManager;
+    Floor floor;
     Wall wall;
 
 
@@ -30,6 +31,7 @@ public class GameWorld  extends ScreenAdapter {
 
         TextureRegion[][] split = new TextureRegion(assetManager.get("brick.png", Texture.class))
             .split(8, 8);
+        floor = new Floor(split[0][1]);
         wall = new Wall(split[0][0]);
     }
 
@@ -42,6 +44,7 @@ public class GameWorld  extends ScreenAdapter {
         game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
 
         game.batch.begin();
+        floor.draw(game.batch);
         wall.draw(game.batch);
         game.batch.end();
     }
