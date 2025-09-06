@@ -1,4 +1,4 @@
-package cn.tofucat.snake.entities;
+package cn.tofucat.snake.entity;
 
 import cn.tofucat.snake.conf.Config;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,16 +17,16 @@ public class Wall extends Brick {
 
     public void init() {
         points.clear();
-        for (int i = 0; i < Config.instance.WALL_LEN; i++) {
+        for (int i = 0; i < Config.instance.BRICK_NUM; i++) {
             // Top
             points.add(new Vector2(i * Config.instance.BRICK_SIZE,
-                (Config.instance.WALL_LEN - 1) * Config.instance.BRICK_SIZE));
+                (Config.instance.BRICK_NUM - 1) * Config.instance.BRICK_SIZE));
             // Bottom
             points.add(new Vector2(i * Config.instance.BRICK_SIZE, 0));
             // Left
             points.add(new Vector2(0, i * Config.instance.BRICK_SIZE));
             // Right
-            points.add(new Vector2((Config.instance.WALL_LEN - 1) * Config.instance.BRICK_SIZE,
+            points.add(new Vector2((Config.instance.BRICK_NUM - 1) * Config.instance.BRICK_SIZE,
                 i * Config.instance.BRICK_SIZE));
         }
     }
