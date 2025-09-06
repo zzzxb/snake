@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Floor extends Brick {
-    private final Array<Vector2> points;
+    public final Array<Vector2> points;
 
     public Floor(TextureRegion textureRegion) {
         super(textureRegion);
@@ -16,7 +16,7 @@ public class Floor extends Brick {
     }
 
     public void init() {
-        points.clear();
+        if(!points.isEmpty()) points.clear();
         for (int i = 1; i < Config.instance.BRICK_NUM - 1; i++) {
             for (int j = 1; j < Config.instance.BRICK_NUM - 1; j++) {
                 points.add(new Vector2(i * Config.instance.BRICK_SIZE, j * Config.instance.BRICK_SIZE));
