@@ -2,6 +2,7 @@ package cn.tofucat.snake.systems;
 
 import cn.tofucat.snake.world.GameWorld;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -22,7 +23,7 @@ public class DieSystem extends GameWorldSystem {
         Array<Vector2> wp = gameWorld.wall.points;
         if (wp.contains(gameWorld.snake.points.first(), false)) {
             Gdx.app.log("die", "Collide with the wall!");
-            gameWorld.gameState = GameWorld.GameState.GAME_OVER;
+            gameOver();
         }
     }
 
@@ -32,9 +33,15 @@ public class DieSystem extends GameWorldSystem {
         for (int i = 1; i < gameWorld.snake.points.size; i++) {
             if (gameWorld.snake.points.get(i).equals(gameWorld.snake.points.first())) {
                 Gdx.app.log("die", "commit suicide!");
-                gameWorld.gameState = GameWorld.GameState.GAME_OVER;
+                gameOver();
                 return;
             }
         }
+    }
+
+    private void gameOver() {
+        gameWorld.stopNowMusic();
+        gameWorld.gameState = GameWorld.GameState.GAME_OVER;
+        gameWorld.assetManager.get("game-over.mp3", Music.class).play();
     }
 }

@@ -4,6 +4,7 @@ import cn.tofucat.snake.entity.Snake;
 import cn.tofucat.snake.world.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 
 public class CtrlSystem extends GameWorldSystem {
 
@@ -18,6 +19,9 @@ public class CtrlSystem extends GameWorldSystem {
             gameWorld.gameState = GameWorld.GameState.STOP;
             gameWorld.food.init();
             gameWorld.snake.init();
+            if(gameWorld.assetManager.get("game-over.mp3", Music.class).isPlaying()) {
+                gameWorld.assetManager.get("game-over.mp3", Music.class).stop();
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             gameWorld.gameState = gameWorld.gameState == GameWorld.GameState.STOP ? GameWorld.GameState.START : GameWorld.GameState.STOP;

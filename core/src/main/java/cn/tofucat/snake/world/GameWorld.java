@@ -10,8 +10,11 @@ import cn.tofucat.snake.systems.CtrlSystem;
 import cn.tofucat.snake.systems.DieSystem;
 import cn.tofucat.snake.systems.EatingSystem;
 import cn.tofucat.snake.systems.MovementSystem;
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +22,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class GameWorld extends ScreenAdapter {
     SnakeGame game;
-    AssetManager assetManager;
+    public AssetManager assetManager;
     CtrlSystem ctrlSystem;
     MovementSystem movementSystem;
     EatingSystem eatingSystem;
@@ -31,6 +34,7 @@ public class GameWorld extends ScreenAdapter {
     public Snake snake;
     public GameState gameState;
     public int level;
+    private String nowMusicName;
 
     public enum GameState {
         START, STOP, GAME_OVER
@@ -44,6 +48,11 @@ public class GameWorld extends ScreenAdapter {
     public void show() {
         assetManager = new AssetManager();
         assetManager.load("brick.png", Texture.class);
+        assetManager.load("lottk.mp3", Music.class);
+        assetManager.load("evening-breeze.mp3", Music.class);
+        assetManager.load("just_blue.mp3", Music.class);
+        assetManager.load("game-over.mp3", Music.class);
+        assetManager.load("gold.mp3", Sound.class);
         assetManager.finishLoading();
         level = Config.instance.LEVEL;
         gameState = GameState.STOP;
@@ -64,6 +73,7 @@ public class GameWorld extends ScreenAdapter {
     public void render(float delta) {
         ctrlSystem.update(delta);
         if (gameState == GameState.START) {
+            playMusic();
             movementSystem.update(delta);
             eatingSystem.update(delta);
             dieSystem.update(delta);
@@ -79,6 +89,32 @@ public class GameWorld extends ScreenAdapter {
         food.draw(game.batch);
         snake.draw(game.batch);
         game.batch.end();
+    }
+
+    public void playMusic() {
+        String newMusic = switch (level) {
+                case 1 -> "evening-breeze.mp3";
+                case 2 -> "lottk.mp3";
+                default -> "just_blue.mp3";
+            };
+
+        if(!newMusic.equals(nowMusicName)) {
+            stopNowMusic();
+        }
+
+        Music music = assetManager.get(newMusic, Music.class);
+        if (!music.isPlaying()) {
+            nowMusicName = newMusic;
+            music.setLooping(true);
+            music.play();
+            music.setPosition(2f);
+        }
+    }
+
+    public void stopNowMusic() {
+        if(nowMusicName != null && !nowMusicName.isEmpty()) {
+            assetManager.get(nowMusicName, Music.class).stop();
+        }
     }
 
     @Override

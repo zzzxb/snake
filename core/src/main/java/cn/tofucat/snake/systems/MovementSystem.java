@@ -71,7 +71,7 @@ public class MovementSystem extends GameWorldSystem {
     private void removeSpoor() {
         Snake snake = gameWorld.snake;
         if (snake.points.size == 0) return;
-        if (snake.points.size > snake.len + 1) {
+        if (snake.points.size > snake.len + 2) {
             snake.points.removeIndex(snake.points.size - 1);
         }
     }
