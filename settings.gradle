@@ -7,8 +7,4 @@ plugins {
 // if you want to temporarily disable a subproject.
 include 'core', 'lwjgl3'
 
-includeBuild('/Users/zzzxb/Code/LibGDX/tofu_gdx') {
-  dependencySubstitution {
-    substitute module('cn.tofucat.gdx:tofu_gdx') using project(':')
-  }
-}
+includeBuild("../tofu-gdx")
