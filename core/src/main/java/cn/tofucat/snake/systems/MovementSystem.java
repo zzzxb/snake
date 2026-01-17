@@ -41,9 +41,9 @@ public class MovementSystem extends GameWorldSystem {
     public void switchDirection() {
         if (gameWorld.snake.directions.size > 1) {
             gameWorld.snake.directions.removeValue(gameWorld.snake.direction, true);
-            Gdx.app.log("snake", "switchDirection - remove old direction: " + gameWorld.snake.direction);
+            Gdx.app.debug("snake", "switchDirection - remove old direction: " + gameWorld.snake.direction);
             gameWorld.snake.direction = gameWorld.snake.directions.first();
-            Gdx.app.log("snake", "switchDirection - use new direction: " + gameWorld.snake.direction);
+            Gdx.app.debug("snake", "switchDirection - use new direction: " + gameWorld.snake.direction);
         }
     }
 

@@ -69,10 +69,10 @@ public class CtrlSystem extends GameWorldSystem {
     public void addDirection(Snake.Direction direction) {
         gameWorld.gameState = GameWorld.GameState.START;
         if (gameWorld.snake.directions.size < 2) {
-            Gdx.app.log("ctrl", "move snake -> " + direction);
+            Gdx.app.debug("ctrl", "move snake -> " + direction);
             gameWorld.snake.directions.add(direction);
         } else {
-            Gdx.app.log("ctrl", "direction queue is full.");
+            Gdx.app.debug("ctrl", "direction queue is full.");
         }
     }
 }

@@ -18,7 +18,7 @@ public class StageFade {
 
     public void addSprite(Sprite sprite, float inTime, float outTime) {
         timesList.add(new Times(inTime, outTime, sprite));
-        Gdx.app.log("StageFade", "add sprite " + sprite.getTexture());
+        Gdx.app.debug("StageFade", "add sprite " + sprite.getTexture());
     }
 
     public Sprite process(float delta) {
@@ -36,7 +36,7 @@ public class StageFade {
             Times times = timesList.first();
             if(nowSprite == null) {
                 nowSprite = times.sprite;
-                Gdx.app.log("StageFade", "now sprite is " + nowSprite.getTexture());
+                Gdx.app.debug("StageFade", "now sprite is " + nowSprite.getTexture());
             }
             nowSprite.setAlpha(effect.show(delta, times.inTime, times.outTime));
         }
@@ -52,11 +52,11 @@ public class StageFade {
 
         Times first = timesList.first();
         timesList.removeIndex(0);
-        Gdx.app.log("StageFade", "remove sprite " + first.sprite.getTexture());
+        Gdx.app.debug("StageFade", "remove sprite " + first.sprite.getTexture());
 
         if(dispose) {
             first.sprite.getTexture().dispose();
-            Gdx.app.log("StageFade", "dispose sprite " + first.sprite.getTexture());
+            Gdx.app.debug("StageFade", "dispose sprite " + first.sprite.getTexture());
         }
     }
 

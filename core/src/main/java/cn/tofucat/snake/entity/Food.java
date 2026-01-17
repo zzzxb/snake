@@ -34,7 +34,7 @@ public class Food extends Brick {
                 int y = MathUtils.random(1, Config.instance.BRICK_NUM - 2);
                 Vector2 vector2 = new Vector2(x * Config.instance.BRICK_SIZE, y * Config.instance.BRICK_SIZE);
                 if (!points.contains(vector2, false)) {
-                    Gdx.app.log("eat", "add food point: " + vector2);
+                    Gdx.app.debug("eat", "add food point: " + vector2);
                     points.add(vector2);
                     break;
                 }

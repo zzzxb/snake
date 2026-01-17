@@ -2,9 +2,7 @@ package cn.tofucat.snake.systems;
 
 import cn.tofucat.snake.conf.Config;
 import cn.tofucat.snake.world.GameWorld;
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 
@@ -19,7 +17,7 @@ public class EatingSystem extends GameWorldSystem {
         Vector2 sf = gameWorld.snake.points.first();
         for (Vector2 point : gameWorld.food.points) {
             if (sf.equals(point)) {
-                Gdx.app.log("eat", "Eating food!");
+                Gdx.app.debug("eat", "Eating food!");
                 gameWorld.assetManager.get("gold.mp3", Sound.class).play();
                 gameWorld.snake.len += 1;
                 gameWorld.food.points.removeValue(point, true);
